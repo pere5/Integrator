@@ -2,6 +2,7 @@ package integrator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
@@ -16,12 +17,12 @@ public class Application implements CommandLineRunner {
     private Repository repository;
 
     public static void main(String[] args) {
-        Parser.parse();
-        //SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
+        Parser.parse();
         //mongoExample();
     }
 

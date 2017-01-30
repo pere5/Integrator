@@ -12,12 +12,38 @@ import java.util.*;
  */
 public class Parser {
 
-    private static Map<String, List<String>> categoryIdMap = null;
-    private static Map<String, List<String>> categoryChildrenMap = null;
+    private static Map<String, Map<String, List<String>>> categoryIdMap = new HashMap<>();
+    private static Map<String, Map<String, List<String>>> categoryChildrenMap = new HashMap<>();
+    private static Map<String, Set<String>> allCategoriesSet = new HashMap<>();
 
-    public static Set<String> getMatchingCategoriesSet(String categoryToMatch) {
+    public static class Tuple<X, Y> {
+        public final X x;
+        public final Y y;
+        public Tuple(X x, Y y) {
+            this.x = x;
+            this.y = y;
+        }
 
+        @Override
+        public String toString() {
+            return "{" + x + " = " + y + '}';
+        }
+    }
 
+    public static Set<String> getMatchingCategoriesSet(String categoryToMatch, String language) {
+        List<Tuple<String, Integer>> fuzzyScores = new ArrayList<>();
+        List<Tuple<String, Double>> jaroWinklerScores = new ArrayList<>();
+
+        //https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html
+        for (String category: allCategoriesSet.get(language)) {
+            fuzzyScores.add(new Tuple<>(category, StringUtils.getFuzzyDistance(category, categoryToMatch, Locale.ENGLISH)));
+            jaroWinklerScores.add(new Tuple<>(category, StringUtils.getJaroWinklerDistance(category, categoryToMatch)));
+        }
+        fuzzyScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
+        jaroWinklerScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
+
+        System.out.println(Utils.prettyList(fuzzyScores));
+        System.out.println(Utils.prettyList(jaroWinklerScores));
 
         return null;
     }
@@ -30,39 +56,34 @@ public class Parser {
          *   - Each category may or may not have children.
          */
 
-        String content = readFile();
+        Map<String, String> languages = new HashMap<>();
+        languages.put("Svenska", "sv-SE");
+        languages.put("English", "en-US");
+        languages.put("Norsk", "no-NO");
+        languages.put("Dansk", "da-DK");
 
-        categoryIdMap = buildCategoryIdMap(content);
-        categoryChildrenMap = buildCategoryChildrenMap(categoryIdMap);
-        //System.out.println(content);
-        //System.out.println(Utils.prettyMap(categoryChildrenMap));
+        for (Map.Entry<String, String> language : languages.entrySet()) {
+            String content = readFile(language.getValue());
+            categoryIdMap.put(language.getKey(), buildCategoryIdMap(content));
+            categoryChildrenMap.put(language.getKey(), buildCategoryChildrenMap(categoryIdMap.get(language.getKey())));
+            allCategoriesSet.put(language.getKey(), buildAllCategoriesSet(categoryIdMap.get(language.getKey())));
+        }
 
-        /*
-         * Levenshtein distance
-         * This is the number of changes needed to change one String into another,
-         * where each change is a single character modification (deletion, insertion or substitution).
-        */
-        //System.out.println(StringUtils.getLevenshteinDistance("abcdd", "abcf"));                  // high bad
-
-        /*
-         * Jaro Winkler Distance
-         * The Jaro measure is the weighted sum of percentage of matched characters from each file and transposed characters.
-         */
-        //System.out.println(StringUtils.getJaroWinklerDistance("abcd", "abcf"));                         // high good
-
-        /*
-         * Fuzzy Distance
-         * This string matching algorithm is similar to the algorithms of editors such as Sublime Text, TextMate, Atom and others.
-         * One point is given for every matched character. Subsequent matches yield two bonus points.
-         * A higher score indicates a higher similarity.
-         */
-        //System.out.println(StringUtils.getFuzzyDistance("abcd", "abcf", Locale.ENGLISH));   // high good
+        getMatchingCategoriesSet("Shoes", "English");
     }
 
-    private static String readFile() {
+    private static Set<String> buildAllCategoriesSet(Map<String, List<String>> categoryIdMap) {
+        Set<String> allCategories = new HashSet<>();
+        for (List<String> categories: categoryIdMap.values()) {
+            allCategories.addAll(categories);
+        }
+        return allCategories;
+    }
+
+    private static String readFile(String language) {
         String content = null;
         try {
-            String fileName = "F:\\IdeaProjects\\Integrator\\src\\main\\resources\\taxonomy-with-ids.en-US.txt";
+            String fileName = "F:\\IdeaProjects\\Integrator\\src\\main\\resources\\taxonomy-with-ids." + language + ".txt";
             content = new String(Files.readAllBytes(Paths.get(fileName)));
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,14 +114,16 @@ public class Parser {
         Map<String, List<String>> categoryIdMap = new HashMap<>();
         assert content != null;
         for (String line: content.split("\n")) {
-            int dash = line.indexOf('-');
-            String id = line.substring(0, dash).trim();
-            String categoryBunch = line.substring(dash + 1);
-            List<String> categories = new ArrayList<>();
-            for (String category: categoryBunch.split(">")) {
-                categories.add(category.trim());
+            if (!line.startsWith("#")) {
+                int dash = line.indexOf('-');
+                String id = line.substring(0, dash).trim();
+                String categoryBunch = line.substring(dash + 1);
+                List<String> categories = new ArrayList<>();
+                for (String category: categoryBunch.split(">")) {
+                    categories.add(category.trim());
+                }
+                categoryIdMap.put(id, categories);
             }
-            categoryIdMap.put(id, categories);
         }
         return categoryIdMap;
     }
