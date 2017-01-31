@@ -1,14 +1,10 @@
 package integrator;
 
+import integrator.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -30,13 +26,13 @@ public class Application implements CommandLineRunner {
         repository.deleteAll();
 
         // save a couple of customers
-        repository.save(new GoogleProductCategory("Alice", "Smith"));
-        repository.save(new GoogleProductCategory("Bob", "Smith"));
+        repository.save(new Category("Alice", "Smith"));
+        repository.save(new Category("Bob", "Smith"));
 
         // fetch all customers
         System.out.println("Customers found with findAll():");
         System.out.println("-------------------------------");
-        for (GoogleProductCategory customer : repository.findAll()) {
+        for (Category customer : repository.findAll()) {
             System.out.println(customer);
         }
         System.out.println();
@@ -48,7 +44,7 @@ public class Application implements CommandLineRunner {
 
         System.out.println("Customers found with findByLastName('Smith'):");
         System.out.println("--------------------------------");
-        for (GoogleProductCategory customer : repository.findByLastName("Smith")) {
+        for (Category customer : repository.findByLastName("Smith")) {
             System.out.println(customer);
         }
     }

@@ -1,17 +1,17 @@
-package integrator;
+package integrator.model;
 
 import org.springframework.data.annotation.Id;
 
 /**
  * Created by Per Eriksson on 2017-01-29.
  */
-public class GoogleProductCategory {
+public class Category {
     @Id
     private String id;
     private String firstName;
     private String lastName;
 
-    public GoogleProductCategory(String firstName, String lastName) {
+    public Category(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -42,7 +42,7 @@ public class GoogleProductCategory {
 
     @Override
     public String toString() {
-        return "GoogleProductCategory{" +
+        return "Category{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Per Eriksson on 2017-01-29.
@@ -15,6 +16,19 @@ public class Parser {
     private static Map<String, Map<String, List<String>>> categoryIdMap = new HashMap<>();
     private static Map<String, Map<String, List<String>>> categoryChildrenMap = new HashMap<>();
     private static Map<String, Set<String>> allCategoriesSet = new HashMap<>();
+    public static Map<String, String> languages = new HashMap<>();
+    public static final String SVENSKA = "Svenska";
+    public static final String ENGLISH = "English";
+    public static final String NORSK = "Norsk";
+    public static final String DANSK = "Dansk";
+    static {
+        languages.put(SVENSKA, "sv-SE");
+        languages.put(ENGLISH, "en-US");
+        languages.put(NORSK, "no-NO");
+        languages.put(DANSK, "da-DK");
+    }
+
+
 
     public static class Tuple<X, Y> {
         public final X x;
@@ -30,22 +44,22 @@ public class Parser {
         }
     }
 
-    public static Set<String> getMatchingCategoriesSet(String categoryToMatch, String language) {
+    public static Map<String, List<String>> getMatchingCategoriesSet(String flawedCategory, String language) {
         List<Tuple<String, Integer>> fuzzyScores = new ArrayList<>();
         List<Tuple<String, Double>> jaroWinklerScores = new ArrayList<>();
 
         //https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html
         for (String category: allCategoriesSet.get(language)) {
-            fuzzyScores.add(new Tuple<>(category, StringUtils.getFuzzyDistance(category, categoryToMatch, Locale.ENGLISH)));
-            jaroWinklerScores.add(new Tuple<>(category, StringUtils.getJaroWinklerDistance(category, categoryToMatch)));
+            fuzzyScores.add(new Tuple<>(category, StringUtils.getFuzzyDistance(category, flawedCategory, Locale.ENGLISH)));
+            jaroWinklerScores.add(new Tuple<>(category, StringUtils.getJaroWinklerDistance(category, flawedCategory)));
         }
         fuzzyScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
         jaroWinklerScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
 
-        System.out.println(Utils.prettyList(fuzzyScores));
-        System.out.println(Utils.prettyList(jaroWinklerScores));
-
-        return null;
+        Map<String, List<String>> response = new HashMap<>();
+        response.put("fuzzyScores", fuzzyScores.stream().map(tuple -> tuple.x).limit(10).collect(Collectors.toList()));
+        response.put("jaroWinklerScores", jaroWinklerScores.stream().map(tuple -> tuple.x).limit(10).collect(Collectors.toList()));
+        return response;
     }
 
     public static void parse() {
@@ -56,20 +70,12 @@ public class Parser {
          *   - Each category may or may not have children.
          */
 
-        Map<String, String> languages = new HashMap<>();
-        languages.put("Svenska", "sv-SE");
-        languages.put("English", "en-US");
-        languages.put("Norsk", "no-NO");
-        languages.put("Dansk", "da-DK");
-
         for (Map.Entry<String, String> language : languages.entrySet()) {
             String content = readFile(language.getValue());
             categoryIdMap.put(language.getKey(), buildCategoryIdMap(content));
             categoryChildrenMap.put(language.getKey(), buildCategoryChildrenMap(categoryIdMap.get(language.getKey())));
             allCategoriesSet.put(language.getKey(), buildAllCategoriesSet(categoryIdMap.get(language.getKey())));
         }
-
-        getMatchingCategoriesSet("Shoes", "English");
     }
 
     private static Set<String> buildAllCategoriesSet(Map<String, List<String>> categoryIdMap) {

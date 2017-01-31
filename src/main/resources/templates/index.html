@@ -1,15 +1,52 @@
 <!DOCTYPE HTML>
-<html>
-<head> 
-    <title>Getting Started: Serving Web Content</title> 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<html lang="en" ng-app="integrator">
+    <head>
+        <title>Getting Started: Serving Web Content</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-</head>
-<body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" />
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="/js/integrator.js"></script>
+        <script src="/js/indexController.js"></script>
 
+    </head>
+    <body style="padding-top: 80px">
 
-
-    <p>Get your greeting <a href="/greeting">here</a></p>
-</body>
+        <div class="container" ng-controller="indexController">
+            <div class="row">
+                <div class="col-md-4">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input ng-model="flawedCategory" type="text" class="form-control" id="flawedCategory" placeholder="category" />
+                        </div>
+                        <button ng-click="getCategorySuggestions(flawedCategory)" type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div ng-repeat="category in categories.fuzzyScores" class="radio">
+                        <label>
+                            <input type="radio" ng-value="category" ng-model="selectedCategory" />
+                            {{category}}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div ng-repeat="category in categories.jaroWinklerScores" class="radio">
+                        <label>
+                            <input type="radio" ng-value="category" ng-model="selectedCategory" />
+                            {{category}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
