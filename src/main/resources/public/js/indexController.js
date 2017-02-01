@@ -15,10 +15,12 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
         levenshtein: []
     };
 
-    let getChildrenForCategory = (category, callback) => {
+    $scope.language = "English";
+
+    let getChildrenForCategory = (category, language, callback) => {
         $http({
             method: 'POST',
-            data: {category: category},
+            data: {category: category, language: language},
             url: '/getChildrenForCategory'
         }).then(function successCallback(response) {
             callback(response.data);
@@ -27,37 +29,37 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
         });
     };
 
-    $scope.levenshteinClicked = index => {
+    $scope.levenshteinClicked = (index, language) => {
         let category = $scope.selected.levenshtein[index];
-        getChildrenForCategory(category, categories => {
+        getChildrenForCategory(category, language, categories => {
             console.log("**levenshtein** " + category + "=[" + categories + "]");
             $scope.categories.levenshtein.length = index + 1;
             $scope.categories.levenshtein[index + 1] = categories;
         });
     };
 
-    $scope.fuzzyClicked = index => {
+    $scope.fuzzyClicked = (index, language) => {
         let category = $scope.selected.fuzzy[index];
-        getChildrenForCategory(category, categories => {
+        getChildrenForCategory(category, language, categories => {
             console.log("**fuzzy** " + category + "=[" + categories + "]");
             $scope.categories.fuzzy.length = index + 1;
             $scope.categories.fuzzy[index + 1] = categories;
         });
     };
 
-    $scope.jaroWinklerClicked = index => {
+    $scope.jaroWinklerClicked = (index, language) => {
         let category = $scope.selected.jaroWinkler[index];
-        getChildrenForCategory(category, categories => {
+        getChildrenForCategory(category, language, categories => {
             console.log("**jaroWinkler** " + category + "=[" + categories + "]");
             $scope.categories.jaroWinkler.length = index + 1;
             $scope.categories.jaroWinkler[index + 1] = categories;
         });
     };
 
-    $scope.getCategorySuggestions = (flawedCategory) => {
+    $scope.getCategorySuggestions = (flawedCategory, language) => {
         $http({
             method: 'POST',
-            data: {flawedCategory: flawedCategory},
+            data: {flawedCategory: flawedCategory, language: language},
             url: '/getCategorySuggestions'
         }).then(function successCallback(response) {
             $scope.selected.fuzzy[0] = response.data.fuzzyScores[0];
@@ -66,9 +68,9 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
             $scope.categories.fuzzy[0] = response.data.fuzzyScores;
             $scope.categories.jaroWinkler[0] = response.data.jaroWinklerScores;
             $scope.categories.levenshtein[0] = response.data.levenshteinScores;
-            $scope.jaroWinklerClicked(0);
-            $scope.fuzzyClicked(0);
-            $scope.levenshteinClicked(0);
+            $scope.jaroWinklerClicked(0, language);
+            $scope.fuzzyClicked(0, language);
+            $scope.levenshteinClicked(0, language);
         }, function errorCallback(response) {
             console.log("Error in indexController.getCategorySuggestions: " + response)
         });

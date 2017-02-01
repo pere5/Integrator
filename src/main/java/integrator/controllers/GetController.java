@@ -11,12 +11,12 @@ import java.util.Map;
 public class GetController {
 
     @RequestMapping(value="/getCategorySuggestions", method=RequestMethod.POST)
-    public Map<String, List<String>> getCategorySuggestions(@RequestBody Map<String, String> flawedCategoryMap) {
-        return Parser.getMatchingCategoriesSet(flawedCategoryMap.get("flawedCategory"), Parser.ENGLISH);
+    public Map<String, List<String>> getCategorySuggestions(@RequestBody Map<String, String> categoryMap) {
+        return Parser.getMatchingCategoriesSet(categoryMap.get("flawedCategory"), categoryMap.get("language"));
     }
 
     @RequestMapping(value="/getChildrenForCategory", method=RequestMethod.POST)
     public List<String> getChildrenForCategory(@RequestBody Map<String, String> categoryMap) {
-        return Parser.getChildrenForCategory(categoryMap.get("category"), Parser.ENGLISH);
+        return Parser.getChildrenForCategory(categoryMap.get("category"), categoryMap.get("language"));
     }
 }
