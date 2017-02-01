@@ -4,13 +4,13 @@
 
 integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) => {
     $scope.categories = {
-        fuzzy: [{}],
-        jaroWinkler: [{}]
+        fuzzy: [],
+        jaroWinkler: []
     };
 
     $scope.selected = {
-        fuzzy: [""],
-        jaroWinkler: [""]
+        fuzzy: [],
+        jaroWinkler: []
     };
 
     let getChildrenForCategory = (category, callback) => {
@@ -25,17 +25,20 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
         });
     };
 
-    $scope.fuzzyClicked = () => {
-        let category = $scope.selected.fuzzy[0];
-        getChildrenForCategory(category, response => {
-            console.log("**fuzzy** " + category + "=[" + response + "]");
+    $scope.fuzzyClicked = index => {
+        let category = $scope.selected.fuzzy[index];
+        getChildrenForCategory(category, categories => {
+            console.log("**fuzzy** " + category + "=[" + categories + "]");
+            $scope.categories.fuzzy.length = index + 1;
+            $scope.categories.fuzzy[index + 1] = categories;
         });
     };
 
-    $scope.jaroWinklerClicked = () => {
+    $scope.jaroWinklerClicked = index => {
         let category = $scope.selected.jaroWinkler[0];
-        getChildrenForCategory(category, response => {
-            console.log("**jaroWinkler** " + category + "=[" + response + "]");
+        getChildrenForCategory(category, categories => {
+            console.log("**jaroWinkler** " + category + "=[" + categories + "]");
+            $scope.categories.jaroWinkler[index + 1] = categories;
         });
     };
 
