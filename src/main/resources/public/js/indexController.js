@@ -35,9 +35,10 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
     };
 
     $scope.jaroWinklerClicked = index => {
-        let category = $scope.selected.jaroWinkler[0];
+        let category = $scope.selected.jaroWinkler[index];
         getChildrenForCategory(category, categories => {
             console.log("**jaroWinkler** " + category + "=[" + categories + "]");
+            $scope.categories.jaroWinkler.length = index + 1;
             $scope.categories.jaroWinkler[index + 1] = categories;
         });
     };
@@ -52,7 +53,8 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
             $scope.selected.jaroWinkler[0] = response.data.jaroWinklerScores[0];
             $scope.categories.fuzzy[0] = response.data.fuzzyScores;
             $scope.categories.jaroWinkler[0] = response.data.jaroWinklerScores;
-
+            $scope.jaroWinklerClicked(0);
+            $scope.fuzzyClicked(0);
         }, function errorCallback(response) {
             console.log("Error in indexController.getCategorySuggestions: " + response)
         });

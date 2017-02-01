@@ -39,12 +39,24 @@
                     <h4>Jaro Winkler similarity</h4>
                 </div>
             </div>
-            <div class="row" ng-repeat="localCategories in categories.fuzzy" style="margin-bottom: 25px;">
-                <div class="col-md-6">
+            <div class="col-md-6">
+                <div class="row" ng-repeat="localCategories in categories.fuzzy" style="margin-bottom: 25px;">
                     <form>
                         <div class="radio" ng-repeat="category in localCategories">
                             <label>
                                 <input type="radio" ng-value="category" ng-model="selected.fuzzy[$parent.$index]" ng-click="fuzzyClicked($parent.$index)" />
+                                {{category}}
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row" ng-repeat="localCategories in categories.jaroWinkler" style="margin-bottom: 25px;">
+                    <form>
+                        <div class="radio" ng-repeat="category in localCategories">
+                            <label>
+                                <input type="radio" ng-value="category" ng-model="selected.jaroWinkler[$parent.$index]" ng-click="jaroWinklerClicked($parent.$index)" />
                                 {{category}}
                             </label>
                         </div>
