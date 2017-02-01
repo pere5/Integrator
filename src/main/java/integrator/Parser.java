@@ -49,18 +49,22 @@ public class Parser {
     public static Map<String, List<String>> getMatchingCategoriesSet(String flawedCategory, String language) {
         List<Tuple<String, Integer>> fuzzyScores = new ArrayList<>();
         List<Tuple<String, Double>> jaroWinklerScores = new ArrayList<>();
+        List<Tuple<String, Integer>> levenshteinScores = new ArrayList<>();
 
         //https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html
         for (String category: allCategoriesSet.get(language)) {
             fuzzyScores.add(new Tuple<>(category, StringUtils.getFuzzyDistance(category, flawedCategory, Locale.ENGLISH)));
             jaroWinklerScores.add(new Tuple<>(category, StringUtils.getJaroWinklerDistance(category, flawedCategory)));
+            levenshteinScores.add(new Tuple<>(category, StringUtils.getLevenshteinDistance(category, flawedCategory)));
         }
         fuzzyScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
         jaroWinklerScores.sort((tuple1, tuple2) -> tuple2.y.compareTo(tuple1.y));
+        levenshteinScores.sort(Comparator.comparing(tuple2 -> tuple2.y));
 
         Map<String, List<String>> response = new HashMap<>();
         response.put("fuzzyScores", fuzzyScores.stream().map(tuple -> tuple.x).limit(10).collect(Collectors.toList()));
         response.put("jaroWinklerScores", jaroWinklerScores.stream().map(tuple -> tuple.x).limit(10).collect(Collectors.toList()));
+        response.put("levenshteinScores", levenshteinScores.stream().map(tuple -> tuple.x).limit(10).collect(Collectors.toList()));
         return response;
     }
 

@@ -5,12 +5,14 @@
 integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) => {
     $scope.categories = {
         fuzzy: [],
-        jaroWinkler: []
+        jaroWinkler: [],
+        levenshtein: []
     };
 
     $scope.selected = {
         fuzzy: [],
-        jaroWinkler: []
+        jaroWinkler: [],
+        levenshtein: []
     };
 
     let getChildrenForCategory = (category, callback) => {
@@ -22,6 +24,15 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
             callback(response.data);
         }, function errorCallback(response) {
             console.log("Error in indexController.getChildrenForCategory: " + response)
+        });
+    };
+
+    $scope.levenshteinClicked = index => {
+        let category = $scope.selected.levenshtein[index];
+        getChildrenForCategory(category, categories => {
+            console.log("**levenshtein** " + category + "=[" + categories + "]");
+            $scope.categories.levenshtein.length = index + 1;
+            $scope.categories.levenshtein[index + 1] = categories;
         });
     };
 
@@ -51,10 +62,13 @@ integratorApp.controller('indexController', ['$scope', '$http', ($scope, $http) 
         }).then(function successCallback(response) {
             $scope.selected.fuzzy[0] = response.data.fuzzyScores[0];
             $scope.selected.jaroWinkler[0] = response.data.jaroWinklerScores[0];
+            $scope.selected.levenshtein[0] = response.data.levenshteinScores[0];
             $scope.categories.fuzzy[0] = response.data.fuzzyScores;
             $scope.categories.jaroWinkler[0] = response.data.jaroWinklerScores;
+            $scope.categories.levenshtein[0] = response.data.levenshteinScores;
             $scope.jaroWinklerClicked(0);
             $scope.fuzzyClicked(0);
+            $scope.levenshteinClicked(0);
         }, function errorCallback(response) {
             console.log("Error in indexController.getCategorySuggestions: " + response)
         });

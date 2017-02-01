@@ -32,14 +32,17 @@
                 </div>
             </div>
             <div class="row" style="margin-bottom: 25px;">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <h4>Fuzzy similarity</h4>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <h4>Jaro Winkler similarity</h4>
                 </div>
+                <div class="col-md-4">
+                    <h4>Levenshtein similarity</h4>
+                </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="row" ng-repeat="localCategories in categories.fuzzy" style="margin-bottom: 25px;">
                     <form>
                         <div class="radio" ng-repeat="category in localCategories">
@@ -51,12 +54,24 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="row" ng-repeat="localCategories in categories.jaroWinkler" style="margin-bottom: 25px;">
                     <form>
                         <div class="radio" ng-repeat="category in localCategories">
                             <label>
                                 <input type="radio" ng-value="category" ng-model="selected.jaroWinkler[$parent.$index]" ng-click="jaroWinklerClicked($parent.$index)" />
+                                {{category}}
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row" ng-repeat="localCategories in categories.levenshtein" style="margin-bottom: 25px;">
+                    <form>
+                        <div class="radio" ng-repeat="category in localCategories">
+                            <label>
+                                <input type="radio" ng-value="category" ng-model="selected.levenshtein[$parent.$index]" ng-click="levenshteinClicked($parent.$index)" />
                                 {{category}}
                             </label>
                         </div>
