@@ -28,7 +28,9 @@ public class Parser {
         languages.put(DANSK, "da-DK");
     }
 
-
+    public static List<String> getChildrenForCategory(String category, String language) {
+        return categoryChildrenMap.get(language).get(category);
+    }
 
     public static class Tuple<X, Y> {
         public final X x;
@@ -102,10 +104,10 @@ public class Parser {
         Map<String, List<String>> categoryChildrenMap = new HashMap<>();
         for (List<String> categories: categoryIdMap.values()) {
             for (String category: categories) {
+                List<String> myChildren = categoryChildrenMap.computeIfAbsent(category, k -> new ArrayList<>());
                 int index = categories.indexOf(category);
                 boolean haveChild = index + 1 != categories.size();
                 if (haveChild) {
-                    List<String> myChildren = categoryChildrenMap.computeIfAbsent(category, k -> new ArrayList<>());
                     String newChild = categories.get(index + 1);
                     if (!myChildren.contains(newChild)) {
                         myChildren.add(newChild);

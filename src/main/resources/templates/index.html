@@ -21,7 +21,7 @@
     <body style="padding-top: 80px">
 
         <div class="container" ng-controller="indexController">
-            <div class="row">
+            <div class="row" style="margin-bottom: 35px;">
                 <div class="col-md-4">
                     <form class="form-inline">
                         <div class="form-group">
@@ -30,18 +30,30 @@
                         <button ng-click="getCategorySuggestions(flawedCategory)" type="submit" class="btn btn-default">Submit</button>
                     </form>
                 </div>
+            </div>
+            <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-6">
-                    <div ng-repeat="category in categories.fuzzyScores" class="radio">
-                        <label>
-                            <input type="radio" ng-value="category" ng-model="selectedCategory" />
-                            {{category}}
-                        </label>
-                    </div>
+                    <h4>Fuzzy similarity</h4>
                 </div>
                 <div class="col-md-6">
-                    <div ng-repeat="category in categories.jaroWinklerScores" class="radio">
+                    <h4>Jaro Winkler similarity</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <form name="myForm">
+                        <div ng-repeat="category in categories.fuzzy[0]" class="radio">
+                            <label>
+                                <input type="radio" name="optionsFuzzy" ng-value="category" ng-model="selected.fuzzy[0]" ng-click="fuzzyClicked()" />
+                                {{category}}
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div ng-repeat="category in categories.jaroWinkler[0]" class="radio">
                         <label>
-                            <input type="radio" ng-value="category" ng-model="selectedCategory" />
+                            <input type="radio" name="optionsJaroWinkler" ng-value="category" ng-model="selected.jaroWinkler[0]" ng-click="jaroWinklerClicked()" />
                             {{category}}
                         </label>
                     </div>
