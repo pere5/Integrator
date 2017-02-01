@@ -1,8 +1,14 @@
 package integrator;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -92,11 +98,16 @@ public class Parser {
         return allCategories;
     }
 
+
+
     private static String readFile(String language) {
+        Resource resource = new ClassPathResource("taxonomy-with-ids." + language + ".txt");
         String content = null;
         try {
-            String fileName = "F:\\IdeaProjects\\Integrator\\src\\main\\resources\\taxonomy-with-ids." + language + ".txt";
-            content = new String(Files.readAllBytes(Paths.get(fileName)));
+            InputStream resourceInputStream = resource.getInputStream();
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(resourceInputStream, writer, "UTF-8");
+            content = writer.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
